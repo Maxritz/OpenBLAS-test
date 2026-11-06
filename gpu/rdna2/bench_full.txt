@@ -1,0 +1,29 @@
+bench: hipsgemm cpu-vs-gpu
+bench: hipGetDeviceCount -> 0, ndev=1
+GPU  : AMD Radeon RX 9070 XT  (gcnArchName=gfx1201, 32 CUs)
+CPU  : openblas baseline C:\Users\rr\AppData\Roaming\Python\Python315\site-packages\numpy.libs\libscipy_openblas64_-ed4f167a5330424524f45258e7ca2c8d.dll
+
+f32 SGEMM  C[MxN] = A[MxK] * B[NxK]^T   (GPU column is end-to-end, transfers included)
+M=N=K                 cpu1t   openblas        gpu  gpu/cpu1t  gpu/oblas   gpu_TF/s
+256                    23.5      151.3       63.7      2.71x 0.420873x       63.7
+512                    22.8      501.7      358.4     15.74x 0.714381x      358.4
+1024                   21.8      981.8      537.7     24.61x 0.547633x      537.7
+  gpu        vs reference  max_abs=4.768e-06  max_rel=1.159e-03  rms_rel=2.296e-07
+  openblas   vs reference  max_abs=1.812e-05  max_rel=3.150e-03  rms_rel=5.972e-07
+2048                   20.1     1004.4     2618.7    130.25x 2.607204x     2618.7
+4096                   12.1      959.8     3896.2    323.31x 4.059348x     3896.2
+  gpu        vs reference  max_abs=1.621e-05  max_rel=5.600e-03  rms_rel=3.211e-07
+  openblas   vs reference  max_abs=9.155e-05  max_rel=1.575e-02  rms_rel=1.191e-06
+
+int8 GEMM  int32 accumulate, 4 int8 per word (dp4a) - K4 words = 4*K4 columns
+M=N=K                 cpu1t        gpu  gpu/cpu1t   gpu_Tops/s
+256                    0.01       0.25     25.53x         0.25
+  int8 gpu vs cpu: max |diff| = 0 (exact match: yes)
+512                    0.01       1.42    145.86x         1.42
+  int8 gpu vs cpu: max |diff| = 0 (exact match: yes)
+1024                   0.01       5.72    582.57x         5.72
+  int8 gpu vs cpu: max |diff| = 0 (exact match: yes)
+2048                   0.01      12.49   1288.48x        12.49
+  int8 gpu vs cpu: max |diff| = 0 (exact match: yes)
+  quant epi  vs reference  max_abs=1.526e-05  max_rel=1.192e-07  rms_rel=4.364e-08
+  quant epilogue 1024^3: 1.719 ms (1249.3 GFLOPS)

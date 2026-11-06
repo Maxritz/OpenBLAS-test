@@ -121,3 +121,9 @@ CMakeCache.txt
 CMakeFiles/*
 .vscode
 **/__pycache__
+# build and run logs
+*.log
+# gcc RTL dump files from debugging test builds
+test/*.c.[0-9][0-9][0-9]r.*
+# written by test/Makefile's test_gemm_i8 rule
+test/I8GEMM.SUMM
